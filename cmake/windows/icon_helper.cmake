@@ -8,6 +8,9 @@
 # CMake helper functions for Windows icon generation
 # Provides functions to convert PNG files to ICO format with transparency support
 
+# Capture the directory where this helper resides at include time
+set(_ICON_HELPER_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
 # Function to generate Windows icon from PNG file
 # Usage: generate_windows_icon(
 #   PNG_FILE path/to/logo.png
@@ -46,7 +49,7 @@ function(generate_windows_icon)
     endif()
 
     # Find the convert_png_to_ico.cmake script
-    set(CONVERTER_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/convert_png_to_ico.cmake")
+    set(CONVERTER_SCRIPT "${_ICON_HELPER_DIR}/convert_png_to_ico.cmake")
     if(NOT EXISTS "${CONVERTER_SCRIPT}")
         message(WARNING "Icon generation: Converter script not found: ${CONVERTER_SCRIPT}")
         return()

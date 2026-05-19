@@ -1,12 +1,15 @@
 #[=[
     Copyright 2026, Philip Rose, GM3ZZA
-    
+
     GNU General Public License Version 3 or later.
     This file is part of the GM3ZZA CMake shared layer.
 
 #]=]
 
 # Runtime asset staging and install.
+
+# Capture the directory where this module resides at include time
+set(_GM3ZZA_RESOURCES_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 function(gm3zza_stage_runtime_files)
     # Copy runtime data files to build directory for development use.
@@ -101,11 +104,11 @@ function(gm3zza_enable_windows_icon)
     endif()
     
     # Find the icon helper
-    find_file(ICON_HELPER_PATH "icon_helper.cmake" PATHS "${CMAKE_CURRENT_LIST_DIR}/windows")
-    if(NOT ICON_HELPER_PATH)
-        message(FATAL_ERROR "GM3ZZA: icon_helper.cmake not found in ${CMAKE_CURRENT_LIST_DIR}/windows")
+    set(ICON_HELPER_PATH "${_GM3ZZA_RESOURCES_MODULE_DIR}/windows/icon_helper.cmake")
+    if(NOT EXISTS "${ICON_HELPER_PATH}")
+        message(FATAL_ERROR "GM3ZZA: icon_helper.cmake not found at ${ICON_HELPER_PATH}")
     endif()
-    
+
     include("${ICON_HELPER_PATH}")
     
     generate_windows_icon_and_resource(
