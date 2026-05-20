@@ -18,7 +18,7 @@
 
 # CMake helper function for hamlib integration.
 # It augments find_package(HAMLIB) with additional handling for MSVC.
-function (find_hamlib)
+function (gm3zza_find_hamlib)
     find_package(HAMLIB)
     if (NOT HAMLIB_FOUND AND MSVC)
       message(STATUS "HAMLIB not found")
@@ -50,8 +50,20 @@ function (find_hamlib)
     set(HAMLIB_DLLS "${HAMLIB_DLLS}" PARENT_SCOPE)
 endfunction()
 
+# Register Hamlib DLLs for install.
+function(gm3zza_register_hamlib_dlls)
+	if(NOT MSVC OR NOT HAMLIB_DLLS)
+		return()
+	endif()
+	gm3zza_register_runtime_dlls(FILES ${HAMLIB_DLLS} COMPONENT applications)
+	# Propagate the registration back to the caller's scope
+	set(_GM3ZZA_RUNTIME_DLLS "${_GM3ZZA_RUNTIME_DLLS}" PARENT_SCOPE)
+	set(_GM3ZZA_RUNTIME_DLLS_COMPONENT "${_GM3ZZA_RUNTIME_DLLS_COMPONENT}" PARENT_SCOPE)
+endfunction()
+
+
 # Copy hamlib DLLs to the install directory.
-function(install_hamlib_dlls)
+function(gm3zza_install_hamlib_dlls)
    install(FILES ${HAMLIB_DLLS} 
     DESTINATION bin
     COMPONENT applications
