@@ -42,6 +42,7 @@ function(gm3zza_stage_runtime_files)
         endif()
 
         add_custom_command(TARGET ${ARG_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${DEST_DIR}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${SOURCE_FILE}"
                 "${DEST_DIR}"
