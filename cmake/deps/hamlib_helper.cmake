@@ -20,7 +20,8 @@
 # It augments find_package(HAMLIB) with additional handling for MSVC.
 function (gm3zza_find_hamlib)
   list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-    find_package(HAMLIB)
+  message(STATUS "Finding HAMLIB - looking in ${CMAKE_MODULE_PATH}...")
+  find_package(HAMLIB)
     if (NOT HAMLIB_FOUND AND MSVC)
       message(STATUS "HAMLIB not found")
     ## Externally set hamlib install directory: find_package(HAMLIB) not part of installation
