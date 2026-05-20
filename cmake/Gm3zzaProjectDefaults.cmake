@@ -43,11 +43,12 @@ endfunction()
 function(gm3zza_set_default_install_dirs APP_NAME)
     # Standardise install destination for application data and assets.
     # This replaces ad-hoc use of CMAKE_INSTALL_RPATH as a data destination.
+    string(TOLOWER "${APP_NAME}" APP_NAME_LOWER)
     
     if(MSVC)
         set(APP_DATA_INSTALL_DIR "etc" PARENT_SCOPE)
     else()
-        set(APP_DATA_INSTALL_DIR "etc/${APP_NAME}" PARENT_SCOPE)
+        set(APP_DATA_INSTALL_DIR "etc/${APP_NAME_LOWER}" PARENT_SCOPE)
     endif()
     
     message(STATUS "GM3ZZA: Data install directory: ${APP_DATA_INSTALL_DIR}")
