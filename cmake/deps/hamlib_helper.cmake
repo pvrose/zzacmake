@@ -19,6 +19,7 @@
 # CMake helper function for hamlib integration.
 # It augments find_package(HAMLIB) with additional handling for MSVC.
 function (gm3zza_find_hamlib)
+  list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
     find_package(HAMLIB)
     if (NOT HAMLIB_FOUND AND MSVC)
       message(STATUS "HAMLIB not found")
