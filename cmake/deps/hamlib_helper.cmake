@@ -20,8 +20,7 @@
 # It augments find_package(HAMLIB) with additional handling for MSVC.
 function (gm3zza_find_hamlib)
   list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-  message(STATUS "Finding HAMLIB - looking in ${CMAKE_MODULE_PATH}...")
-  find_package(HAMLIB)
+    find_package(HAMLIB)
     if (NOT HAMLIB_FOUND AND MSVC)
       message(STATUS "HAMLIB not found")
     ## Externally set hamlib install directory: find_package(HAMLIB) not part of installation
@@ -32,24 +31,55 @@ function (gm3zza_find_hamlib)
       endif()
       set(HAMLIB_INCLUDE_DIR "${HAMLIB_ROOT}/include")
       set(HAMLIB_LIBRARY "${HAMLIB_ROOT}/lib/msvc/libhamlib-4.lib")
-    ## Required DLLs need to be copied directory with executable.
+    ## Required DLLs to be copied to target directory
       set(HAMLIB_DLLS
         "${HAMLIB_ROOT}/bin/libhamlib-4.dll"
         "${HAMLIB_ROOT}/bin/libusb-1.0.dll"
         "${HAMLIB_ROOT}/bin/libwinpthread-1.dll"
         "${HAMLIB_ROOT}/bin/libgcc_s_seh-1.dll"
       )
-      add_custom_target(hamlib_dll ALL)
-      foreach(F ${HAMLIB_DLLS})
-          add_custom_command(TARGET hamlib_dll POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy ${F} ${ZZALOG_RUN_DIR}
-            COMMENT "Copying ${F} to ${ZZALOG_RUN_DIR}"
-          )
-      endforeach()
     endif()  
     set(HAMLIB_INCLUDE_DIR "${HAMLIB_INCLUDE_DIR}" PARENT_SCOPE)
     set(HAMLIB_LIBRARY "${HAMLIB_LIBRARY}" PARENT_SCOPE)
     set(HAMLIB_DLLS "${HAMLIB_DLLS}" PARENT_SCOPE)
+endfunction()
+
+# Copy hamlib DLLs to target output directory during build.
+# Usage: gm3zza_copy_hamlib_dlls(TARGET <target_name>)
+function(gm3zza_copy_hamlib_dlls)
+	set(options "")
+	set(oneValueArgs TARGET)
+	set(multiValueArgs "")
+	cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	if(NOT ARG_TARGET)
+		message(FATAL_ERROR "gm3zza_copy_hamlib_dlls: TARGET is required")
+	endif()
+
+	if(NOT MSVC)
+		return()
+	endif()
+
+	if(NOT TARGET ${ARG_TARGET})
+		message(FATAL_ERROR "Target ${ARG_TARGET} does not exist")
+		return()
+	endif()
+
+	if(HAMLIB_DLLS)
+		foreach(DLL_FILE ${HAMLIB_DLLS})
+			if(EXISTS "${DLL_FILE}")
+				add_custom_command(TARGET ${ARG_TARGET} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different
+						"${DLL_FILE}"
+						"$<TARGET_FILE_DIR:${ARG_TARGET}>"
+					COMMENT "Copying hamlib DLL: ${DLL_FILE}"
+				)
+			endif()
+		endforeach()
+		message(STATUS "hamlib: Will copy DLLs to ${ARG_TARGET} output directory")
+	else()
+		message(WARNING "hamlib: No DLL paths available")
+	endif()
 endfunction()
 
 # Register Hamlib DLLs for install.
