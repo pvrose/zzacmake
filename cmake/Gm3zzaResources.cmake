@@ -54,14 +54,19 @@ endfunction()
 function(gm3zza_install_runtime_files)
     # Install runtime data files to app data directory.
     #
-    # Usage: gm3zza_install_runtime_files(FILES <list> [DEST_SUBDIR <dir>] [COMPONENT <name>])
+    # Usage: gm3zza_install_runtime_files(
+    #          [FILES <list>]
+    #          [DIRECTORIES <list>]
+    #          [DEST_SUBDIR <dir>]
+    #          [COMPONENT <name>]
+    #        )
     
     set(options "")
     set(oneValueArgs DEST_SUBDIR COMPONENT)
-    set(multiValueArgs FILES)
+    set(multiValueArgs FILES DIRECTORIES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     
-    if(NOT ARG_FILES)
+    if(NOT ARG_FILES AND NOT ARG_DIRECTORIES)
         return()
     endif()
     
@@ -74,10 +79,20 @@ function(gm3zza_install_runtime_files)
         set(DEST_DIR "${APP_DATA_INSTALL_DIR}/${ARG_DEST_SUBDIR}")
     endif()
     
-    install(FILES ${ARG_FILES}
-        DESTINATION "${DEST_DIR}"
-        COMPONENT ${ARG_COMPONENT}
-    )
+    if(ARG_FILES)
+        install(FILES ${ARG_FILES}
+            DESTINATION "${DEST_DIR}"
+            COMPONENT ${ARG_COMPONENT}
+        )
+    endif()
+
+    foreach(D ${ARG_DIRECTORIES})
+        install(DIRECTORY "${D}"
+            DESTINATION "${DEST_DIR}"
+            COMPONENT ${ARG_COMPONENT}
+            MESSAGE_NEVER
+        )
+    endforeach()
     
     message(STATUS "GM3ZZA: Installing data files to ${DEST_DIR}")
 endfunction()
