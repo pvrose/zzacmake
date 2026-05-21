@@ -53,7 +53,6 @@ This contains CMake scripts that are intended to provide a commonality among my 
 
 - `gm3zza_find_hamlib`: Locates Hamlib and its runtime DLLs, with extra MSVC fallback handling via `HAMLIB_ROOT`.
 - `gm3zza_register_hamlib_dlls`: Registers Hamlib runtime DLLs for installation on Windows.
-- `gm3zza_install_hamlib_dlls`: Installs the Hamlib runtime DLL set into the application binary directory.
 
 ### cmake/deps/piper_helper.cmake
 

@@ -63,11 +63,3 @@ function(gm3zza_register_hamlib_dlls)
 	set(_GM3ZZA_RUNTIME_DLLS_COMPONENT "${_GM3ZZA_RUNTIME_DLLS_COMPONENT}" PARENT_SCOPE)
 endfunction()
 
-
-# Copy hamlib DLLs to the install directory.
-function(gm3zza_install_hamlib_dlls)
-   install(FILES ${HAMLIB_DLLS} 
-    DESTINATION bin
-    COMPONENT applications
-    )
-endfunction()
