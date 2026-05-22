@@ -52,6 +52,7 @@ function(gm3zza_use_zzacommon)
     
     include(FetchContent)
 
+    # Set the components to be built by zzacommon's CMakeLists.txt.
     set(ZZACOMMON_BUILD_COMPONENTS ${ARG_COMPONENTS})
     
     FetchContent_Declare(
