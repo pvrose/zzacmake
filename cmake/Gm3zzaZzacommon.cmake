@@ -52,7 +52,7 @@ function(gm3zza_use_zzacommon)
     
     include(FetchContent)
 
-    set(CACHE ZZACOMMON_BUILD_COMPONENTS ${ARG_COMPONENTS})
+    set(ZZACOMMON_BUILD_COMPONENTS ${ARG_COMPONENTS})
     
     FetchContent_Declare(
         zzacommon
