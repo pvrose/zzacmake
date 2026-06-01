@@ -29,8 +29,29 @@ function (gm3zza_find_hamlib)
       else()
         message(STATUS "Using HAMLIB_ROOT ${HAMLIB_ROOT}")
       endif()
-      set(HAMLIB_INCLUDE_DIR "${HAMLIB_ROOT}/include")
-      set(HAMLIB_LIBRARY "${HAMLIB_ROOT}/lib/msvc/libhamlib-4.lib")
+	  set(HAMLIB_INCLUDE_DIR "${HAMLIB_ROOT}/include")
+	  set(HAMLIB_LIBRARY "${CMAKE_BINARY_DIR}/libhamlib-4.lib")
+
+	  # Create custom command to generate the .lib file from .def
+	  add_custom_command(
+		OUTPUT "${HAMLIB_LIBRARY}"
+		COMMAND lib /def:${HAMLIB_ROOT}/lib/msvc/libhamlib-4.def /out:${HAMLIB_LIBRARY} /machine:x64
+		DEPENDS "${HAMLIB_ROOT}/lib/msvc/libhamlib-4.def"
+		COMMENT "Creating hamlib import library: ${HAMLIB_LIBRARY}"
+	  )
+
+	  # Create a custom target that depends on the generated .lib file
+	  add_custom_target(hamlib_import_lib ALL DEPENDS "${HAMLIB_LIBRARY}")
+
+	  # Create an imported library target that your applications can link against
+	  add_library(hamlib SHARED IMPORTED GLOBAL)
+	  set_target_properties(hamlib PROPERTIES
+		IMPORTED_LOCATION "${HAMLIB_ROOT}/bin/libhamlib-4.dll"
+		IMPORTED_IMPLIB "${HAMLIB_LIBRARY}"
+		INTERFACE_INCLUDE_DIRECTORIES "${HAMLIB_INCLUDE_DIR}"
+	  )
+	  # Make the imported library depend on the custom target
+	  add_dependencies(hamlib hamlib_import_lib)
     ## Required DLLs to be copied to target directory
       set(HAMLIB_DLLS
         "${HAMLIB_ROOT}/bin/libhamlib-4.dll"
