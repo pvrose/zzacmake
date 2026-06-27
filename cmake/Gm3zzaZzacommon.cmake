@@ -32,11 +32,16 @@ function(gm3zza_use_zzacommon)
     endif()
     
     # Build search paths for locally installed zzacommon sibling
-    if(CMAKE_BUILD_TYPE)
+    if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
         string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWER)
         list(APPEND CMAKE_PREFIX_PATH 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-${BUILD_TYPE_LOWER}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-${BUILD_TYPE_LOWER}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-debug"
+        )
+    elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll]|^[Mm][Ii][Nn]")
+        list(APPEND CMAKE_PREFIX_PATH 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-release"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-release"
         )
     endif()
     
