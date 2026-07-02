@@ -13,7 +13,6 @@ function(gm3zza_use_zzacommon)
     #
     # Usage: gm3zza_use_zzacommon(COMPONENTS <list> [GIT_TAG <tag>] [ENABLE_DOCS])
     
-    set(options ENABLE_DOCS)
     set(oneValueArgs GIT_TAG)
     set(multiValueArgs COMPONENTS)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -26,46 +25,33 @@ function(gm3zza_use_zzacommon)
         set(ARG_GIT_TAG "master")
     endif()
     
-    # Expected docs setting for zzacommon (if its CMakeLists supports it)
-    if(ARG_ENABLE_DOCS)
-        set(ZZACOMMON_DOX ON CACHE BOOL "Enable zzacommon documentation" FORCE)
-    endif()
-    
     # Build search paths for locally installed zzacommon sibling
-    if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
-        string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWER)
-        list(APPEND CMAKE_PREFIX_PATH 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-debug"
-        )
-    elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll]|^[Mm][Ii][Nn]")
-        list(APPEND CMAKE_PREFIX_PATH 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-release"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-release"
-        )
-    endif()
-    
-    # Multi-config fallback
-    list(APPEND CMAKE_PREFIX_PATH 
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-debug"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/build/x64-release"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-debug"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/out/install/x64-release"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/build"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon/install"
-    )
+    set (ZZACOMMON_LOCAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zzacommon")
     
     include(FetchContent)
 
     # Set the components to be built by zzacommon's CMakeLists.txt.
     set(ZZACOMMON_BUILD_COMPONENTS ${ARG_COMPONENTS})
+
+    if (EXISTS "${ZZACOMMON_LOCAL_SOURCE_DIR}/CMakeLists.txt")
+        message(STATUS "GM3ZZA: Using zzacommon from ${ZZACOMMON_LOCAL_SOURCE_DIR}")
+
+        FetchContent_Declare(
+            zzacommon
+            SOURCE_DIR ${ZZACOMMON_LOCAL_SOURCE_DIR}
+        )
+
+    else()
+        message(STATUS "GM3ZZA: Fetching zzacommon from GitHub (${ARG_GIT_TAG})")
     
-    FetchContent_Declare(
-        zzacommon
-        GIT_REPOSITORY https://github.com/pvrose/zzacommon.git
-        GIT_TAG ${ARG_GIT_TAG}
-        FIND_PACKAGE_ARGS NAMES zzacommon COMPONENTS ${ARG_COMPONENTS}
+        FetchContent_Declare(
+            zzacommon
+            GIT_REPOSITORY https://github.com/pvrose/zzacommon.git
+            GIT_TAG ${ARG_GIT_TAG}
+            FIND_PACKAGE_ARGS NAMES zzacommon COMPONENTS ${ARG_COMPONENTS}
     )
+
+    endif()
     
     FetchContent_MakeAvailable(zzacommon)
     

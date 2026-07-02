@@ -97,12 +97,7 @@ function(gm3zza_enable_docs)
             DEPENDS "${_ug_bin_dir}/html/index.html"
         )
 
-        if(ARG_TARGET)
-            add_dependencies("${ARG_TARGET}" ug_html)
-        endif()
-
         # PDF generation from the Doxygen-produced LaTeX output
-        if(ARG_PDF)
             if(MSVC)
                 add_custom_command(
                     OUTPUT "${_ug_bin_dir}/latex/refman.pdf"
@@ -139,12 +134,7 @@ function(gm3zza_enable_docs)
                 DEPENDS "${_ug_bin_dir}/${ARG_APP_NAME}.pdf"
             )
 
-            if(ARG_TARGET)
-                add_dependencies("${ARG_TARGET}" pdf)
-            endif()
-
             set(GM3ZZA_USERGUIDE_PDF_FILE "${_ug_bin_dir}/${ARG_APP_NAME}.pdf" PARENT_SCOPE)
-        endif()
 
         set(GM3ZZA_USERGUIDE_HTML_DIR "${_ug_bin_dir}/html" PARENT_SCOPE)
         message(STATUS "GM3ZZA Docs: Userguide output: ${_ug_bin_dir}/html")
@@ -179,10 +169,6 @@ function(gm3zza_enable_docs)
         add_custom_target(api_html ALL
             DEPENDS "${_api_bin_dir}/html/index.html"
         )
-
-        if(ARG_TARGET)
-            add_dependencies("${ARG_TARGET}" api_html)
-        endif()
 
         set(GM3ZZA_API_HTML_DIR "${_api_bin_dir}/html" PARENT_SCOPE)
         message(STATUS "GM3ZZA Docs: API docs output: ${_api_bin_dir}/html")
