@@ -56,6 +56,8 @@ function(gm3zza_enable_docs)
 
     message(STATUS "GM3ZZA Docs: Doxygen found: ${DOXYGEN_EXECUTABLE}")
 
+    add_custom_target(docs)
+
     # -----------------------------------------------------------------------
     # User Guide
     # -----------------------------------------------------------------------
@@ -93,7 +95,7 @@ function(gm3zza_enable_docs)
             VERBATIM
         )
 
-        add_custom_target(ug_html ALL
+        add_custom_target(ug_html
             DEPENDS "${_ug_bin_dir}/html/index.html"
         )
 
@@ -116,7 +118,7 @@ function(gm3zza_enable_docs)
                 )
             endif()
 
-            add_custom_target(ug_pdf ALL
+            add_custom_target(ug_pdf
                 DEPENDS "${_ug_bin_dir}/latex/refman.pdf"
             )
 
@@ -130,7 +132,7 @@ function(gm3zza_enable_docs)
                 COMMENT "GM3ZZA: Copying ${ARG_APP_NAME}.pdf"
             )
 
-            add_custom_target(pdf ALL
+            add_custom_target(pdf 
                 DEPENDS "${_ug_bin_dir}/${ARG_APP_NAME}.pdf"
             )
 
@@ -138,7 +140,9 @@ function(gm3zza_enable_docs)
 
         set(GM3ZZA_USERGUIDE_HTML_DIR "${_ug_bin_dir}/html" PARENT_SCOPE)
         message(STATUS "GM3ZZA Docs: Userguide output: ${_ug_bin_dir}/html")
-    endif()
+
+        add_dependencies(docs ug_html pdf)
+   endif()
 
     # -----------------------------------------------------------------------
     # API Documentation
@@ -166,12 +170,14 @@ function(gm3zza_enable_docs)
             VERBATIM
         )
 
-        add_custom_target(api_html ALL
+        add_custom_target(api_html 
             DEPENDS "${_api_bin_dir}/html/index.html"
         )
 
         set(GM3ZZA_API_HTML_DIR "${_api_bin_dir}/html" PARENT_SCOPE)
         message(STATUS "GM3ZZA Docs: API docs output: ${_api_bin_dir}/html")
+
+        add_dependencies(docs api_html zzacommon_api_html)
     endif()
 
 endfunction()
