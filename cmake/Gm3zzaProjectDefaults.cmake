@@ -13,7 +13,21 @@ function(gm3zza_project_defaults)
     set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
     set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)
     set(CMAKE_CXX_EXTENSIONS OFF PARENT_SCOPE)
-    
+
+  if(MSVC)
+    if(POLICY CMP0091)
+      cmake_policy(SET CMP0091 NEW)
+    endif()
+
+    # Default for all targets created after this point
+    if(NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
+      set(CMAKE_MSVC_RUNTIME_LIBRARY
+          "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+          PARENT_SCOPE)
+    endif()
+  endif()
+
+
     # Build defaults
     if(NOT MSVC)
         set(BUILD_SHARED_LIBS OFF PARENT_SCOPE)
