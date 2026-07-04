@@ -48,7 +48,6 @@ function(gm3zza_use_zzacommon)
             zzacommon
             GIT_REPOSITORY https://github.com/pvrose/zzacommon.git
             GIT_TAG ${ARG_GIT_TAG}
-            FIND_PACKAGE_ARGS NAMES zzacommon COMPONENTS ${ARG_COMPONENTS}
     )
 
     endif()
