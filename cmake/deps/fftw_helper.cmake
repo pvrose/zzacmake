@@ -13,6 +13,7 @@
 function(gm3zza_find_fftw)
 	if (MSVC)
 		if (FFTW_ROOT)
+		    file(TO_CMAKE_PATH "${FFTW_ROOT}" FFTW_ROOT)
 			message(STATUS "GM3ZZA: Using FFTW_ROOT: ${FFTW_ROOT}")
 			set(FFTW3_INCLUDE_DIRS "${FFTW_ROOT}")
 			set(FFTW3_LIBRARIES "${FFTW_ROOT}/libfftw3-3.lib")

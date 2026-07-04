@@ -44,11 +44,9 @@ function(gm3zza_project_defaults)
     endif()
     
     # Set portable user home directory
-    if(MSVC)
-        set(USER_HOME_DIR "$ENV{USERPROFILE}" PARENT_SCOPE)
-    else()
-        set(USER_HOME_DIR "$ENV{HOME}" PARENT_SCOPE)
-    endif()
+    file(REAL_PATH "~" USER_HOME_PATH EXPAND_TILDE)
+    file(TO_CMAKE_PATH "${USER_HOME_PATH}" USER_HOME_PATH) 
+    set(USER_HOME_PATH ${USER_HOME_PATH} PARENT_SCOPE)
     
     message(STATUS "GM3ZZA: CXX standard: ${CMAKE_CXX_STANDARD}")
     message(STATUS "GM3ZZA: User home: ${USER_HOME_DIR}")
