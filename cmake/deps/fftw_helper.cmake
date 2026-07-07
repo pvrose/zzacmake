@@ -37,6 +37,14 @@ function(gm3zza_find_fftw)
 		if (NOT FFTW3_INCLUDE_DIRS)
 			message(FATAL_ERROR "FFTW3 not found. Please install FFTW3 using your package manager.")
 		endif()
+		if (NOT TARGET FFTW3::fftw3)
+			add_library(FFTW3::fftw3 UNKNOWN IMPORTED GLOBAL)
+			set_target_properties(FFTW3::fftw3 PROPERTIES
+			  IMPORTED_LOCATION "${FFTW3_LIBRARIES}"
+			  INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIRS}"
+			)
+		endif()
+		set(FFTW3_TARGET FFTW3::fftw3 PARENT_SCOPE)
 	endif()
 	set(FFTW3_INCLUDE_DIRS "${FFTW3_INCLUDE_DIRS}" PARENT_SCOPE)
 	set(FFTW3_LIBRARIES "${FFTW3_LIBRARIES}" PARENT_SCOPE)
