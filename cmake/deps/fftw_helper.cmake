@@ -18,13 +18,13 @@ function(gm3zza_find_fftw)
 			set(FFTW3_INCLUDE_DIRS "${FFTW_ROOT}")
 			set(FFTW3_LIBRARIES "${FFTW_ROOT}/libfftw3-3.lib")
 			set(FFTW3_DLL "${FFTW_ROOT}/libfftw3-3.dll")
-
-			# Copy FFTW DLL to build directory for development/debugging
-			add_custom_target(fftw_dll ALL)
-			add_custom_command(TARGET fftw_dll POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFTW3_DLL} ${CMAKE_BINARY_DIR}
-				COMMENT "GM3ZZA: Copying FFTW DLL to build directory"
+			add_library(FFTW3::fftw3 SHARED IMPORTED GLOBAL)
+			set_target_properties(FFTW3::fftw3 PROPERTIES
+			  IMPORTED_IMPLIB "${FFTW_ROOT}/libfftw3-3.lib"
+			  IMPORTED_LOCATION "${FFTW_ROOT}/libfftw3-3.dll"
+			  INTERFACE_INCLUDE_DIRECTORIES "${FFTW_ROOT}"
 			)
+			set(FFTW3_TARGET FFTW3::fftw3 PARENT_SCOPE)
 		else()
 		  message(FATAL_ERROR "FFTW_ROOT environment variable must be set to the FFTW installation directory for MSVC builds.")
 		endif()
