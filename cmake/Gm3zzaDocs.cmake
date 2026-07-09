@@ -100,6 +100,7 @@ function(gm3zza_enable_docs)
         )
 
         # PDF generation from the Doxygen-produced LaTeX output
+        if (ARG_PDF)
             if(MSVC)
                 add_custom_command(
                     OUTPUT "${_ug_bin_dir}/latex/refman.pdf"
@@ -137,6 +138,8 @@ function(gm3zza_enable_docs)
             )
 
             set(GM3ZZA_USERGUIDE_PDF_FILE "${_ug_bin_dir}/${ARG_APP_NAME}.pdf" PARENT_SCOPE)
+
+        endif()
 
         set(GM3ZZA_USERGUIDE_HTML_DIR "${_ug_bin_dir}/html" PARENT_SCOPE)
         message(STATUS "GM3ZZA Docs: Userguide output: ${_ug_bin_dir}/html")

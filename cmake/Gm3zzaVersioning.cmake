@@ -8,6 +8,46 @@
 
 # Version metadata handling and generated file normalisation.
 
+# Function to get the current version from git
+function(gm3zza_get_git_version RESULT_VAR)
+    # Hardcoded fallback values if Git is missing entirely
+    set(FALLBACK_VERSION "1.0.0.0")
+
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+        # Get the closest 3-level tag and count all commits ahead of it
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --long --always
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_VERSION_RAW
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+    endif()
+
+    # Parse the Git output string (e.g., v1.2.3-45-gabcd123)
+    if(GIT_VERSION_RAW MATCHES "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)-([0-9]+)-g")
+        set(VERSION_MAJOR ${CMAKE_MATCH_1})
+        set(VERSION_MINOR ${CMAKE_MATCH_2})
+        set(VERSION_PATCH ${CMAKE_MATCH_3})
+        set(VERSION_TWEAK ${CMAKE_MATCH_4}) # Tweak = number of commits since tag
+        
+        set(CALCULATED_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_TWEAK}")
+    else()
+        set(CALCULATED_VERSION "${FALLBACK_VERSION}")
+    endif()
+
+    # Force CMake to re-configure automatically if the Git history changes
+    if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git/HEAD")
+        set_property(DIRECTORY APPEND PROPERTY 
+            CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/.git/HEAD"
+        )
+    endif()
+
+    # Send the final version string back to the parent scope
+    set(${RESULT_VAR} "${CALCULATED_VERSION}" PARENT_SCOPE)
+endfunction()
+
 function(gm3zza_split_version)
     # Parse <project>_VERSION into major, minor, patch, tweak components.
     # Supports either call style:
