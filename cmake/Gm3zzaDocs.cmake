@@ -24,13 +24,7 @@ function(setup_api_documentation
   # Set "real" dependency
   set(DOXY_OUTPUT_INDEX "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
 
-  # debug
-  message(STATUS "GM3ZZA: Doxygen input file: ${DOXY_IN}")
-  message(STATUS "GM3ZZA: Doxygen output file: ${DOXY_OUT}")
-  message(STATUS "GM3ZZA: Doxygen output index: ${DOXY_OUTPUT_INDEX}")
-  message(STATUS "GM3ZZA: Doxygen source files: ${DOXY_FILES}")
-
-   # Custom Command: This is the actual command that will run Doxygen
+  # Custom Command: This is the actual command that will run Doxygen
   add_custom_command(
     OUTPUT ${DOXY_OUTPUT_INDEX}
     DEPENDS ${DOXY_FILES} ${DOXY_OUT} 
