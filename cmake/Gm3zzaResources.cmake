@@ -90,7 +90,6 @@ function(gm3zza_install_runtime_files)
         install(DIRECTORY "${D}"
             DESTINATION "${DEST_DIR}"
             COMPONENT ${ARG_COMPONENT}
-            MESSAGE_NEVER
         )
     endforeach()
     

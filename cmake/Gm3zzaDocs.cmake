@@ -24,14 +24,20 @@ function(setup_api_documentation
   # Set "real" dependency
   set(DOXY_OUTPUT_INDEX "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
 
+  # debug
+  message(STATUS "GM3ZZA: Doxygen input file: ${DOXY_IN}")
+  message(STATUS "GM3ZZA: Doxygen output file: ${DOXY_OUT}")
+  message(STATUS "GM3ZZA: Doxygen output index: ${DOXY_OUTPUT_INDEX}")
+  message(STATUS "GM3ZZA: Doxygen source files: ${DOXY_FILES}")
+
    # Custom Command: This is the actual command that will run Doxygen
   add_custom_command(
     OUTPUT ${DOXY_OUTPUT_INDEX}
-    DEPENDS ${DOXY_API_FILES} ${DOXY_OUT} zzacommon_api_html
+    DEPENDS ${DOXY_FILES} ${DOXY_OUT} 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${ZZACOMMON_API_HTML_DIR}"
       "${CMAKE_CURRENT_BINARY_DIR}/html/zzacommon"
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXY_API_OUT}
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXY_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "${TARGET_NAME}: Generating API documentation"
     VERBATIM
@@ -41,6 +47,8 @@ function(setup_api_documentation
   add_custom_target(api_html
     DEPENDS ${DOXY_OUTPUT_INDEX}
   )
+
+  add_dependencies(api_html zzacommon_api_html)
 
 endfunction()
 
@@ -66,7 +74,7 @@ function(setup_ug_documentation
     DEPENDS ${DOXY_FILES} ${DOXY_OUT} ${DOXY_IMAGES}
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXY_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "ZZALOG: Generating Userguide documentation"
+    COMMENT "${TARGET_NAME}: Generating Userguide documentation from ${DOXY_OUT}"
     VERBATIM
   )
 
@@ -74,39 +82,52 @@ function(setup_ug_documentation
   add_custom_target(ug_html
     DEPENDS ${DOXY_OUTPUT_INDEX}
   )
+
+  # The principal latex file created by doxygen is refman.tex, which is used to generate the PDF userguide.
+  set(LATEX_MAIN_INPUT "${CMAKE_CURRENT_BINARY_DIR}/latex/refman.tex")
+  # Add any other latex files that are needed for the userguide here.
+  set(LATEX_ALL_SOURCES ${LATEX_MAIN_INPUT}) 
  
     # Command for generating PDF from userguide latex files
     if(MSVC)
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
-        COMMAND miktex-texworks.exe  ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.tex
-        COMMENT "ZZALOG: Generating PDF Userguide"
+        DEPENDS ${LATEX_ALL_SOURCES}
+        COMMAND pdflatex -interaction=nonstopmode -halt-on-error refman.tex 
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/latex"
+        COMMENT "ZZALOG: Generating PDF Userguide (Windows CLI)"   
         VERBATIM
     )
     else()
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
+        DEPENDS ${LATEX_ALL_SOURCES}
         COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex >> /dev/null
-        COMMENT "ZZALOG: Generating PDF Userguide"
+        COMMENT "ZZALOG: Generating PDF Userguide (Linux)"
         VERBATIM
     )
     endif()
 
     add_custom_target(ug_pdf
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf ug_html
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
     )
+
+    add_dependencies(ug_pdf ug_html)
       
     # Copy from latex/refman.pdf to ZZALOG.pdf
     add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
-    ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf
-    COMMENT "Copying PDF"
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
+      COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf
+        ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf
+      COMMENT "Copying PDF"
     )
     add_custom_target(pdf
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf ug_pdf
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.pdf
     )
+
+    add_dependencies(pdf ug_pdf)
 
 endfunction()
 
