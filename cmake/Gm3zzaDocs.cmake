@@ -33,7 +33,7 @@ function(setup_api_documentation
       "${CMAKE_CURRENT_BINARY_DIR}/html/zzacommon"
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXY_API_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "${TARGET_NAME}: Generating API documentation (smart tracking)"
+    COMMENT "${TARGET_NAME}: Generating API documentation"
     VERBATIM
   )
 
@@ -41,9 +41,6 @@ function(setup_api_documentation
   add_custom_target(api_html
     DEPENDS ${DOXY_OUTPUT_INDEX}
   )
-
-  # Set output directory for API HTML
-  set(API_HTML_DIR ${CMAKE_CURRENT_BINARY_DIR}/html PARENT_SCOPE)
 
 endfunction()
 
@@ -69,7 +66,7 @@ function(setup_ug_documentation
     DEPENDS ${DOXY_FILES} ${DOXY_OUT} ${DOXY_IMAGES}
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXY_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "ZZALOG: Generating Userguide documentation (smart tracking)"
+    COMMENT "ZZALOG: Generating Userguide documentation"
     VERBATIM
   )
 
